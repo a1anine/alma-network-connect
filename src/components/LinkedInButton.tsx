@@ -1,11 +1,35 @@
 
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const LinkedInButton = () => {
-  const handleLinkedInLogin = () => {
-    // This is where we would integrate with LinkedIn OAuth
-    console.log("LinkedIn login clicked - would redirect to LinkedIn OAuth");
-    alert("LinkedIn integration would open here. This is a placeholder for OAuth integration.");
+  const { toast } = useToast();
+
+  const handleLinkedInLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      console.error('LinkedIn auth error:', error);
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "Failed to connect with LinkedIn",
+      });
+    }
   };
 
   return (
@@ -35,3 +59,4 @@ const LinkedInButton = () => {
 };
 
 export default LinkedInButton;
+
