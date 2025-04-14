@@ -1,6 +1,14 @@
 
 import { createClient } from '@supabase/supabase-js';
 
+// Extend the Window interface to include Supabase-related properties
+declare global {
+  interface Window {
+    SUPABASE_URL?: string;
+    SUPABASE_ANON_KEY?: string;
+  }
+}
+
 // When using Lovable's Supabase integration, these variables are automatically injected
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
