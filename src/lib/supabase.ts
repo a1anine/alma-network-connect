@@ -22,10 +22,14 @@ try {
     
     // Check if we're in a browser environment
     if (typeof window !== 'undefined') {
-      // This helps during development when env variables might not be set
-      // In production with Lovable's Supabase integration, the real values will be used
-      const fallbackUrl = window.SUPABASE_URL || 'https://your-project.supabase.co';
-      const fallbackKey = window.SUPABASE_ANON_KEY || 'your-anon-key';
+      // In development, use window variables if available (set by dev tools)
+      const fallbackUrl = window.SUPABASE_URL || '';
+      const fallbackKey = window.SUPABASE_ANON_KEY || '';
+      
+      if (!fallbackUrl || !fallbackKey || fallbackUrl.includes('your-project')) {
+        console.error('Valid Supabase credentials not found. Please set environment variables or provide values in the console.');
+        throw new Error('Missing valid Supabase credentials');
+      }
       
       supabase = createClient(fallbackUrl, fallbackKey);
     } else {
