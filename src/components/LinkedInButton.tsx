@@ -9,7 +9,7 @@ const LinkedInButton = () => {
   const handleLinkedInLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'linkedin',
+        provider: 'linkedin_oidc', // Updated from 'linkedin' to 'linkedin_oidc'
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -59,4 +59,3 @@ const LinkedInButton = () => {
 };
 
 export default LinkedInButton;
-
