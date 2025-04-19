@@ -9,9 +9,9 @@ const LinkedInButton = () => {
   const handleLinkedInLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'linkedin_oidc', // Updated from 'linkedin' to 'linkedin_oidc'
+        provider: 'linkedin_oidc',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: 'http://link-base/auth/callback',
         },
       });
 
