@@ -13,6 +13,21 @@ const AuthCallback = () => {
       console.log("Auth callback processing...");
       console.log("URL:", window.location.href);
       
+      // Parse URL parameters to check for error messages from OAuth provider
+      const urlParams = new URLSearchParams(window.location.search);
+      const oauthError = urlParams.get('error');
+      const oauthErrorDescription = urlParams.get('error_description');
+      
+      if (oauthError) {
+        console.error('OAuth error from provider:', oauthError, oauthErrorDescription);
+        setError(`${oauthError}: ${oauthErrorDescription}`);
+        toast.error('Authentication failed', {
+          description: oauthErrorDescription || oauthError
+        });
+        setTimeout(() => navigate('/'), 5000);
+        return;
+      }
+      
       try {
         // Get the session first to check if we're already authenticated
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();

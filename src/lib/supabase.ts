@@ -11,5 +11,13 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     persistSession: true,
     autoRefreshToken: true,
     storage: localStorage,
+    flowType: 'pkce', // Ensure we're using PKCE auth flow for security
+    debug: true // Enable debug mode to see more information in console
   }
+});
+
+// Log auth state changes for debugging
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth event:', event);
+  console.log('Session data:', session);
 });
