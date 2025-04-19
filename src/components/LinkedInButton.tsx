@@ -8,12 +8,11 @@ const LinkedInButton = () => {
 
   const handleLinkedInLogin = async () => {
     try {
-      // Log the action for debugging
       console.log("Starting LinkedIn OAuth login...");
       
-      // Use the exact redirect URL that's registered in LinkedIn and Supabase
-      const redirectUrl = "http://link-base/auth/callback";
-      console.log("Using hardcoded redirect URL:", redirectUrl);
+      // Use the dynamically generated redirect URL
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      console.log("Using dynamic redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
