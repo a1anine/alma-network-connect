@@ -10,9 +10,9 @@ const LinkedInButton = () => {
     try {
       console.log("Starting LinkedIn OAuth login...");
       
-      // Use the dynamically generated redirect URL
+      // Generate the redirect URL with the exact format
       const redirectUrl = `${window.location.origin}/auth/callback`;
-      console.log("Using dynamic redirect URL:", redirectUrl);
+      console.log("Using redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
@@ -45,7 +45,7 @@ const LinkedInButton = () => {
   return (
     <Button 
       onClick={handleLinkedInLogin}
-      className="bg-linkedin hover:bg-linkedin-dark text-white flex items-center gap-2"
+      className="bg-[#0077B5] hover:bg-[#005e8d] text-white flex items-center gap-2 w-full justify-center"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
