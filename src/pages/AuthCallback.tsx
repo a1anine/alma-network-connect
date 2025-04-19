@@ -1,85 +1,90 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(true);
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       console.log("Auth callback processing...");
       console.log("URL:", window.location.href);
       
-      // Parse URL parameters to check for error messages from OAuth provider
+      // Parse URL parameters
       const urlParams = new URLSearchParams(window.location.search);
-      const oauthError = urlParams.get('error');
-      const oauthErrorDescription = urlParams.get('error_description');
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+      const error = urlParams.get('error');
+      const errorDescription = urlParams.get('error_description');
       
-      if (oauthError) {
-        console.error('OAuth error from provider:', oauthError, oauthErrorDescription);
-        setError(`${oauthError}: ${oauthErrorDescription}`);
+      // Check for errors from LinkedIn
+      if (error) {
+        console.error('OAuth error from provider:', error, errorDescription);
+        setError(`${error}: ${errorDescription}`);
         toast.error('Authentication failed', {
-          description: oauthErrorDescription || oauthError
+          description: errorDescription || error
         });
+        setProcessing(false);
+        setTimeout(() => navigate('/'), 5000);
+        return;
+      }
+      
+      // Verify state to prevent CSRF attacks
+      const savedState = localStorage.getItem('linkedin_oauth_state');
+      if (!savedState || state !== savedState) {
+        const stateError = 'Invalid state parameter';
+        console.error(stateError);
+        setError(stateError);
+        toast.error('Authentication failed', {
+          description: 'Security validation failed'
+        });
+        setProcessing(false);
+        setTimeout(() => navigate('/'), 5000);
+        return;
+      }
+      
+      // Clean up the state from localStorage
+      localStorage.removeItem('linkedin_oauth_state');
+      
+      if (!code) {
+        const codeError = 'No authorization code received';
+        console.error(codeError);
+        setError(codeError);
+        toast.error('Authentication failed', {
+          description: 'No authorization code received from LinkedIn'
+        });
+        setProcessing(false);
         setTimeout(() => navigate('/'), 5000);
         return;
       }
       
       try {
-        // Get the session first to check if we're already authenticated
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        // In a real application, you would send this code to your backend
+        // Your backend would exchange it for an access token using your client secret
+        console.log("Authorization code received:", code);
         
-        console.log("Current session data:", sessionData);
+        // For this demo, we'll simulate a successful login
+        localStorage.setItem('demo_user', JSON.stringify({
+          id: 'linkedin-user',
+          name: 'LinkedIn User',
+          email: 'linkedin@example.com',
+          provider: 'linkedin'
+        }));
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          setError('Failed to retrieve session');
-          toast.error('Authentication failed', {
-            description: sessionError.message
-          });
-          return;
-        }
-
-        // If we already have a session, redirect to profile page
-        if (sessionData.session) {
-          console.log("User already authenticated, redirecting to profile");
-          toast.success('Successfully authenticated');
-          navigate('/profile');
-          return;
-        }
-
-        // Try to exchange the code for a session
-        // This is handled automatically by Supabase, but we need to check for errors
-        const { data, error } = await supabase.auth.getUser();
-        
-        console.log("Auth callback user data:", data);
-        
-        if (error) {
-          console.error('Auth callback error:', error);
-          setError(error.message);
-          toast.error('Authentication failed', {
-            description: error.message
-          });
-          navigate('/');
-          return;
-        }
-        
-        if (data.user) {
-          console.log("Authentication successful, user:", data.user);
-          toast.success('Successfully signed in');
-          navigate('/profile');
-        } else {
-          console.log("No user found after callback");
-          setError('No user data returned');
-          navigate('/');
-        }
+        toast.success('Successfully authenticated with LinkedIn');
+        setProcessing(false);
+        navigate('/profile');
       } catch (err) {
-        console.error('Unexpected error in auth callback:', err);
-        setError('Unexpected error during authentication');
-        navigate('/');
+        console.error('Error exchanging code for token:', err);
+        setError('Failed to complete authentication');
+        toast.error('Authentication failed', {
+          description: 'Could not complete the authentication process'
+        });
+        setProcessing(false);
+        setTimeout(() => navigate('/'), 5000);
       }
     };
 
@@ -89,11 +94,25 @@ const AuthCallback = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-2">Authenticating...</h2>
-        <p className="text-muted-foreground">Please wait while we complete the authentication process.</p>
-        {error && (
+        {processing ? (
+          <>
+            <h2 className="text-2xl font-semibold mb-2">Authenticating with LinkedIn...</h2>
+            <p className="text-muted-foreground">Please wait while we complete your authentication.</p>
+            <div className="mt-4 flex justify-center">
+              <div className="animate-spin h-8 w-8 border-4 border-linkedin border-t-transparent rounded-full"></div>
+            </div>
+          </>
+        ) : error ? (
           <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
-            {error}
+            <h2 className="text-xl font-semibold mb-2">Authentication Error</h2>
+            <p>{error}</p>
+            <p className="mt-4 text-sm text-gray-600">Redirecting you back to the home page...</p>
+          </div>
+        ) : (
+          <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-md">
+            <h2 className="text-xl font-semibold mb-2">Authentication Successful</h2>
+            <p>You have successfully authenticated with LinkedIn.</p>
+            <p className="mt-4 text-sm text-gray-600">Redirecting you to your profile...</p>
           </div>
         )}
       </div>

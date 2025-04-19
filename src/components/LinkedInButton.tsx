@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 
 const LinkedInButton = () => {
@@ -11,45 +10,38 @@ const LinkedInButton = () => {
   const handleLinkedInLogin = async () => {
     try {
       setIsLoading(true);
-      console.log("Starting LinkedIn OAuth login...");
       
-      // Use the full absolute URL to ensure consistency
-      const redirectUrl = `${window.location.origin}/auth/callback`;
-      console.log("Using redirect URL:", redirectUrl);
+      // LinkedIn OAuth 2.0 Authorization URL
+      const clientId = "86thvvfrdlgjhk"; // Replace with your actual LinkedIn Client ID
+      const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
+      const scope = encodeURIComponent("r_emailaddress r_liteprofile");
+      const state = Math.random().toString(36).substring(2);
       
-      // Log the full request details for debugging
-      console.log("OAuth request details:", {
-        provider: 'linkedin_oidc',
-        redirectTo: redirectUrl,
-        scopes: 'openid profile email',
-      });
+      // Store state in localStorage for verification when user returns
+      localStorage.setItem("linkedin_oauth_state", state);
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'linkedin_oidc',
-        options: {
-          redirectTo: redirectUrl,
-          scopes: 'openid profile email',
-        },
-      });
-
-      console.log("OAuth response:", data, error);
-
-      if (error) {
-        console.error("LinkedIn auth error details:", error);
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: error.message,
-        });
-      }
+      // Log the redirect URL for debugging
+      console.log("LinkedIn redirect URL:", `${window.location.origin}/auth/callback`);
+      
+      // Construct the LinkedIn authorization URL
+      const linkedInAuthUrl = 
+        `https://www.linkedin.com/oauth/v2/authorization?` +
+        `response_type=code` +
+        `&client_id=${clientId}` +
+        `&redirect_uri=${redirectUri}` +
+        `&state=${state}` +
+        `&scope=${scope}`;
+      
+      // Redirect the user to LinkedIn login
+      window.location.href = linkedInAuthUrl;
+      
     } catch (error) {
-      console.error('LinkedIn auth unexpected error:', error);
+      console.error('LinkedIn auth error:', error);
       toast({
         variant: "destructive",
         title: "Authentication Error",
         description: "Failed to connect with LinkedIn",
       });
-    } finally {
       setIsLoading(false);
     }
   };
