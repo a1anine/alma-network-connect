@@ -11,8 +11,8 @@ const LinkedInButton = () => {
     try {
       setIsLoading(true);
       
-      // LinkedIn OAuth 2.0 Authorization URL
-      const clientId = "86thvvfrdlgjhk"; // Replace with your actual LinkedIn Client ID
+      // Replace with your actual LinkedIn Client ID
+      const clientId = "REPLACE_WITH_YOUR_CLIENT_ID"; // <-- Update this with your actual Client ID
       const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
       const scope = encodeURIComponent("r_emailaddress r_liteprofile");
       const state = Math.random().toString(36).substring(2);
