@@ -8,14 +8,25 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      console.log("Auth callback processing...");
       
-      if (error) {
-        console.error('Auth callback error:', error);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        console.log("Session data:", data);
+        
+        if (error) {
+          console.error('Auth callback error:', error);
+          navigate('/');
+          return;
+        }
+        
+        // Redirect to profile page or home page after successful auth
+        navigate(data.session ? '/profile' : '/');
+      } catch (err) {
+        console.error('Unexpected error in auth callback:', err);
+        navigate('/');
       }
-
-      // Redirect to profile page or home page after successful auth
-      navigate(session ? '/profile' : '/');
     };
 
     handleAuthCallback();

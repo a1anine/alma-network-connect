@@ -8,14 +8,21 @@ const LinkedInButton = () => {
 
   const handleLinkedInLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      // Log the action for debugging
+      console.log("Starting LinkedIn OAuth login...");
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
           redirectTo: 'http://link-base/auth/callback',
+          scopes: 'openid profile email',
         },
       });
 
+      console.log("OAuth response:", data, error);
+
       if (error) {
+        console.error("LinkedIn auth error:", error);
         toast({
           variant: "destructive",
           title: "Authentication Error",
