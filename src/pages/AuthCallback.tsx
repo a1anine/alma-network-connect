@@ -30,9 +30,22 @@ const AuthCallback = () => {
       // Check for errors from LinkedIn
       if (error) {
         console.error('OAuth error from provider:', error, errorDescription);
-        setError(`${error}: ${errorDescription}`);
+        setError(`${error}: ${errorDescription || 'Unknown error'}`);
         toast.error('Authentication failed', {
           description: errorDescription || error
+        });
+        setProcessing(false);
+        setTimeout(() => navigate('/'), 5000);
+        return;
+      }
+      
+      // Check if code is present
+      if (!code) {
+        const codeError = 'No authorization code received';
+        console.error(codeError);
+        setError(codeError);
+        toast.error('Authentication failed', {
+          description: 'No authorization code received from LinkedIn'
         });
         setProcessing(false);
         setTimeout(() => navigate('/'), 5000);
@@ -47,12 +60,24 @@ const AuthCallback = () => {
         match: state === savedState
       });
       
-      if (!savedState || state !== savedState) {
-        const stateError = 'Invalid state parameter';
+      if (!savedState) {
+        const stateError = 'No state parameter found in local storage';
         console.error(stateError);
         setError(stateError);
         toast.error('Authentication failed', {
-          description: 'Security validation failed'
+          description: 'Security validation failed - missing state'
+        });
+        setProcessing(false);
+        setTimeout(() => navigate('/'), 5000);
+        return;
+      }
+      
+      if (state !== savedState) {
+        const stateError = 'Invalid state parameter - potential CSRF attack';
+        console.error(stateError);
+        setError(stateError);
+        toast.error('Authentication failed', {
+          description: 'Security validation failed - state mismatch'
         });
         setProcessing(false);
         setTimeout(() => navigate('/'), 5000);
@@ -61,18 +86,6 @@ const AuthCallback = () => {
       
       // Clean up the state from localStorage
       localStorage.removeItem('linkedin_oauth_state');
-      
-      if (!code) {
-        const codeError = 'No authorization code received';
-        console.error(codeError);
-        setError(codeError);
-        toast.error('Authentication failed', {
-          description: 'No authorization code received from LinkedIn'
-        });
-        setProcessing(false);
-        setTimeout(() => navigate('/'), 5000);
-        return;
-      }
       
       try {
         // In a real application, you would send this code to your backend

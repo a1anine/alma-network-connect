@@ -27,15 +27,20 @@ const LinkedInButton = () => {
       const clientId = "86gzu6xki6tm4d"; // LinkedIn Client ID
       const redirectUri = encodeURIComponent(redirectUrl);
       const scope = encodeURIComponent("r_emailaddress r_liteprofile");
-      const state = Math.random().toString(36).substring(2);
+      
+      // Generate a more robust state parameter
+      const stateArray = new Uint8Array(16);
+      window.crypto.getRandomValues(stateArray);
+      const state = Array.from(stateArray, byte => byte.toString(16).padStart(2, '0')).join('');
       
       // Store state in localStorage for verification when user returns
       localStorage.setItem("linkedin_oauth_state", state);
       
-      // Construct the LinkedIn authorization URL
+      // Construct the LinkedIn authorization URL with explicit parameters
+      // Use the v2 authorization endpoint
       const linkedInAuthUrl = 
-        `https://www.linkedin.com/oauth/v2/authorization?` +
-        `response_type=code` +
+        `https://www.linkedin.com/oauth/v2/authorization` +
+        `?response_type=code` +
         `&client_id=${clientId}` +
         `&redirect_uri=${redirectUri}` +
         `&state=${state}` +
@@ -49,10 +54,22 @@ const LinkedInButton = () => {
         description: "You'll be redirected to LinkedIn to authorize.",
       });
       
-      // Redirect the user to LinkedIn login with a slight delay for toast visibility
+      // Use a more reliable way to redirect - create and click an anchor element
+      const link = document.createElement('a');
+      link.href = linkedInAuthUrl;
+      link.target = "_self"; // Open in the same tab
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Fallback to traditional redirect after a short delay if the above doesn't work
       setTimeout(() => {
-        window.location.href = linkedInAuthUrl;
-      }, 1000);
+        if (document.visibilityState === 'visible') { // Only redirect if still visible
+          console.log("Using fallback redirect method");
+          window.location.href = linkedInAuthUrl;
+        }
+      }, 1500);
       
     } catch (error) {
       console.error('LinkedIn auth error:', error);
