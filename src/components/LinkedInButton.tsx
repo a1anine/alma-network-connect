@@ -11,10 +11,14 @@ const LinkedInButton = () => {
       // Log the action for debugging
       console.log("Starting LinkedIn OAuth login...");
       
+      // Get the current URL's origin for proper redirect construction
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      console.log("Using redirect URL:", redirectUrl);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-          redirectTo: 'http://link-base/auth/callback',
+          redirectTo: redirectUrl,
           scopes: 'openid profile email',
         },
       });
