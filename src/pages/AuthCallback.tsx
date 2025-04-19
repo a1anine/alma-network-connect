@@ -11,7 +11,7 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       console.log("Auth callback processing...");
-      console.log("URL:", window.location.href);
+      console.log("Full callback URL:", window.location.href);
       
       // Parse URL parameters
       const urlParams = new URLSearchParams(window.location.search);
@@ -19,6 +19,13 @@ const AuthCallback = () => {
       const state = urlParams.get('state');
       const error = urlParams.get('error');
       const errorDescription = urlParams.get('error_description');
+      
+      console.log("URL Parameters:", {
+        code: code ? `${code.substring(0, 5)}...` : null, // Log partial code for privacy
+        state: state,
+        error: error,
+        errorDescription: errorDescription
+      });
       
       // Check for errors from LinkedIn
       if (error) {
@@ -34,6 +41,12 @@ const AuthCallback = () => {
       
       // Verify state to prevent CSRF attacks
       const savedState = localStorage.getItem('linkedin_oauth_state');
+      console.log("State verification:", {
+        receivedState: state,
+        savedState: savedState,
+        match: state === savedState
+      });
+      
       if (!savedState || state !== savedState) {
         const stateError = 'Invalid state parameter';
         console.error(stateError);
@@ -64,7 +77,7 @@ const AuthCallback = () => {
       try {
         // In a real application, you would send this code to your backend
         // Your backend would exchange it for an access token using your client secret
-        console.log("Authorization code received:", code);
+        console.log("Authorization code received, proceeding with demo login");
         
         // For this demo, we'll simulate a successful login
         localStorage.setItem('demo_user', JSON.stringify({

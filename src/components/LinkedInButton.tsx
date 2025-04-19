@@ -1,26 +1,36 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const LinkedInButton = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState("");
+
+  useEffect(() => {
+    // Log critical information on component mount
+    const origin = window.location.origin;
+    const callback = `${origin}/auth/callback`;
+    console.log("LinkedIn OAuth debugging:");
+    console.log("- Origin:", origin);
+    console.log("- Callback URL:", callback);
+    console.log("- Client ID: 86gzu6xki6tm4d");
+    
+    setRedirectUrl(callback);
+  }, []);
 
   const handleLinkedInLogin = async () => {
     try {
       setIsLoading(true);
       
       const clientId = "86gzu6xki6tm4d"; // LinkedIn Client ID
-      const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
+      const redirectUri = encodeURIComponent(redirectUrl);
       const scope = encodeURIComponent("r_emailaddress r_liteprofile");
       const state = Math.random().toString(36).substring(2);
       
       // Store state in localStorage for verification when user returns
       localStorage.setItem("linkedin_oauth_state", state);
-      
-      // Log the redirect URL for debugging
-      console.log("LinkedIn redirect URL:", `${window.location.origin}/auth/callback`);
       
       // Construct the LinkedIn authorization URL
       const linkedInAuthUrl = 
@@ -31,8 +41,18 @@ const LinkedInButton = () => {
         `&state=${state}` +
         `&scope=${scope}`;
       
-      // Redirect the user to LinkedIn login
-      window.location.href = linkedInAuthUrl;
+      // Log the complete auth URL for debugging
+      console.log("Redirecting to LinkedIn URL:", linkedInAuthUrl);
+      
+      toast({
+        title: "Redirecting to LinkedIn",
+        description: "You'll be redirected to LinkedIn to authorize.",
+      });
+      
+      // Redirect the user to LinkedIn login with a slight delay for toast visibility
+      setTimeout(() => {
+        window.location.href = linkedInAuthUrl;
+      }, 1000);
       
     } catch (error) {
       console.error('LinkedIn auth error:', error);
@@ -77,4 +97,3 @@ const LinkedInButton = () => {
 };
 
 export default LinkedInButton;
-
