@@ -11,8 +11,7 @@ const LinkedInButton = () => {
     try {
       setIsLoading(true);
       
-      // Replace with your actual LinkedIn Client ID
-      const clientId = "REPLACE_WITH_YOUR_CLIENT_ID"; // <-- Update this with your actual Client ID
+      const clientId = "86gzu6xki6tm4d"; // LinkedIn Client ID
       const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
       const scope = encodeURIComponent("r_emailaddress r_liteprofile");
       const state = Math.random().toString(36).substring(2);
@@ -78,3 +77,4 @@ const LinkedInButton = () => {
 };
 
 export default LinkedInButton;
+
