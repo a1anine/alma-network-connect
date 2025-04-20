@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import LinkedInButton from "@/components/LinkedInButton";
+import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -55,7 +56,7 @@ const Homepage = () => {
   
   // For demo purposes, show connection simulation
   const handleConnect = (id: number) => {
-    alert(`Connection request sent to leader #${id}!`);
+    toast.success(`Connection request sent to leader #${id}!`);
   };
   
   // Filter leaders based on field input
@@ -66,6 +67,7 @@ const Homepage = () => {
   // Demo what happens after LinkedIn login
   const handleDemoLogin = () => {
     setIsLoggedIn(true);
+    toast.success("Welcome to LinkBase! This is a demo experience.");
   };
 
   return (
