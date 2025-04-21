@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ConnectDialog from "@/components/ConnectDialog";
+import { Leader } from "@/types/Leader";
 
 const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,8 +16,8 @@ const Homepage = () => {
   const [fieldFilter, setFieldFilter] = useState("");
   const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
 
-  // Sample data with more diverse fields
-  const leaders = [
+  // Sample data with more detailed profiles
+  const leaders: Leader[] = [
     {
       id: 1,
       name: "Dr. Sarah Chen",
@@ -26,6 +26,9 @@ const Homepage = () => {
       field: "Computer Science",
       alumniStatus: "Stanford '98",
       imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Machine Learning", "AI Ethics", "Computer Vision"],
+      achievements: ["Published 50+ research papers", "ACM Fellow", "Founded AI Ethics Lab"],
+      background: "Former Research Lead at Google AI, pioneering work in ethical AI development",
     },
     {
       id: 2,
@@ -35,6 +38,9 @@ const Homepage = () => {
       field: "Business",
       alumniStatus: "Stanford '05",
       imageUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Tech Strategy", "Startup Scaling", "Product Development"],
+      achievements: ["Led 3 successful IPOs", "Forbes 30 Under 30", "Angel Investor"],
+      background: "Serial entrepreneur with 15+ years in Silicon Valley",
     },
     {
       id: 3,
@@ -44,6 +50,9 @@ const Homepage = () => {
       field: "Biology",
       alumniStatus: "Emory '10",
       imageUrl: "https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Immunology", "Vaccine Development", "Clinical Research"],
+      achievements: ["Led COVID-19 vaccine research", "NIH Research Excellence Award"],
+      background: "Pioneer in mRNA vaccine technology",
     },
     {
       id: 4,
@@ -53,6 +62,9 @@ const Homepage = () => {
       field: "Computer Science",
       alumniStatus: "Stanford '12",
       imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Large Language Models", "Neural Networks", "Reinforcement Learning"],
+      achievements: ["Key contributor to GPT architectures", "Top AI Conference Speaker"],
+      background: "Specialized in developing ethical AI systems",
     },
     {
       id: 5,
@@ -62,6 +74,9 @@ const Homepage = () => {
       field: "Humanities",
       alumniStatus: "Emory '08",
       imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Contemporary Literature", "Digital Humanities", "Cultural Studies"],
+      achievements: ["Pulitzer Prize Nominee", "Published author of 3 books"],
+      background: "Leading voice in digital humanities transformation",
     },
     {
       id: 6,
@@ -71,14 +86,17 @@ const Homepage = () => {
       field: "Biology",
       alumniStatus: "Stanford '15",
       imageUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+      expertise: ["Gene Therapy", "Molecular Biology", "Drug Development"],
+      achievements: ["Breakthrough Cancer Research Award", "30+ Patents"],
+      background: "Pioneer in CRISPR gene editing applications",
     }
   ];
-  
+
   // For demo purposes, show connection dialog
   const handleConnect = (leader: Leader) => {
     setSelectedLeader(leader);
   };
-  
+
   // Filter leaders based on field input and university
   const filteredLeaders = leaders.filter(leader => {
     const fieldMatch = !fieldFilter || leader.field.toLowerCase().includes(fieldFilter.toLowerCase());

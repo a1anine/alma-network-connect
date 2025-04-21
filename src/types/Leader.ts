@@ -7,4 +7,7 @@ export interface Leader {
   field: string;
   alumniStatus: string;
   imageUrl: string;
+  background?: string;
+  achievements?: string[];
+  expertise?: string[];
 }

@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Leader } from "@/types/Leader";
 
 type NetworkingPurpose = 
   | "coffee_chat"
@@ -22,34 +24,24 @@ const purposeOptions: { value: NetworkingPurpose; label: string; message: string
   {
     value: "coffee_chat",
     label: "Coffee Chat",
-    message: "I would love to schedule a coffee chat to learn more about your experience in {field} at {company}.",
+    message: "I would love to schedule a coffee chat to learn more about your experience in {field} at {company}. Your background in {expertise} particularly interests me.",
   },
   {
     value: "expand_network",
     label: "Expand Network",
-    message: "I'm looking to expand my professional network in {field} and would be grateful for the connection.",
+    message: "I'm looking to expand my professional network in {field} and would be grateful for the connection. Your achievements in {achievements} are truly inspiring.",
   },
   {
     value: "industry_advice",
     label: "Industry Advice",
-    message: "I would appreciate your insights and advice about the {field} industry based on your experience.",
+    message: "I would appreciate your insights and advice about the {field} industry based on your experience, particularly regarding {expertise}.",
   },
   {
     value: "job_referral",
     label: "Job Referral",
-    message: "I'm interested in opportunities at {company} and would appreciate learning about potential openings.",
+    message: "I'm interested in opportunities at {company} and would appreciate learning about potential openings. Your background in {expertise} aligns well with my career goals.",
   },
 ];
-
-interface Leader {
-  id: number;
-  name: string;
-  role: string;
-  company: string;
-  field: string;
-  alumniStatus: string;
-  imageUrl: string;
-}
 
 interface ConnectDialogProps {
   leader: Leader;
@@ -58,22 +50,36 @@ interface ConnectDialogProps {
 
 const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
   const [purpose, setPurpose] = useState<NetworkingPurpose | ''>('');
+  const [customMessage, setCustomMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const generateMessage = (template: string) => {
+    return template
+      .replace('{field}', leader.field)
+      .replace('{company}', leader.company)
+      .replace('{expertise}', leader.expertise?.join(', ') || leader.field)
+      .replace('{achievements}', leader.achievements?.join(', ') || `${leader.field} at ${leader.company}`);
+  };
 
   const handleConnect = () => {
     if (!purpose) return;
 
-    const selectedOption = purposeOptions.find(opt => opt.value === purpose);
-    if (!selectedOption) return;
+    const messageToSend = isEditing ? customMessage : 
+      generateMessage(purposeOptions.find(opt => opt.value === purpose)?.message || '');
 
-    const personalizedMessage = selectedOption.message
-      .replace('{field}', leader.field)
-      .replace('{company}', leader.company);
-
-    // In a real app, this would send the connection request
     toast.success('Connection request sent!', {
-      description: `Message: ${personalizedMessage}`,
+      description: `Message: ${messageToSend}`,
     });
     onClose();
+  };
+
+  const handlePurposeChange = (value: NetworkingPurpose) => {
+    setPurpose(value);
+    const selectedOption = purposeOptions.find(opt => opt.value === value);
+    if (selectedOption) {
+      const generatedMessage = generateMessage(selectedOption.message);
+      setCustomMessage(generatedMessage);
+    }
   };
 
   return (
@@ -86,8 +92,8 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="py-4">
-          <Select value={purpose} onValueChange={(value: NetworkingPurpose) => setPurpose(value)}>
+        <div className="space-y-4">
+          <Select value={purpose} onValueChange={handlePurposeChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select your networking purpose" />
             </SelectTrigger>
@@ -101,15 +107,32 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
           </Select>
 
           {purpose && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-md">
-              <p className="text-sm text-gray-600">
-                Preview message:
-              </p>
-              <p className="mt-2 text-sm">
-                {purposeOptions.find(opt => opt.value === purpose)?.message
-                  .replace('{field}', leader.field)
-                  .replace('{company}', leader.company)}
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Preview message:</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  {isEditing ? "Use Template" : "Customize Message"}
+                </Button>
+              </div>
+              
+              {isEditing ? (
+                <Textarea
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  className="min-h-[100px]"
+                  placeholder="Write your personalized message..."
+                />
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-md">
+                  <p className="text-sm">
+                    {generateMessage(purposeOptions.find(opt => opt.value === purpose)?.message || '')}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
