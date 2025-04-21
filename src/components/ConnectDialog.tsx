@@ -25,7 +25,7 @@ const purposeOptions: { value: NetworkingPurpose; label: string; message: string
   {
     value: "coffee_chat",
     label: "Coffee Chat",
-    message: "Hi {firstName}! I'm [Your Name], a fellow {university} alum '{graduationYear}. I've been following your work on {expertise} at {company} and would love to buy you a quick virtual (or in-person) coffee next week. Would you have 15 minutes on Tuesday or Thursday?",
+    message: "Hi {firstName}! I'm [Your Name], a fellow {university} alum '{graduationYear}. I've been following your work on {expertise} at {company} and would love to buy you a quick virtual (or in-person) coffee next week. Would you have 15 minutes on [Day 1] or [Day 2]?",
   },
   {
     value: "expand_network",
@@ -69,11 +69,26 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
       .replace('{expertise}', leader.expertise?.join(', ') || leader.field);
   };
 
+  const getPlaceholderText = () => {
+    return "Tips for customization:\n" +
+           "1. Replace [Your Name] with your name\n" +
+           "2. For coffee chats, update [Day 1] and [Day 2] with specific days/times\n" +
+           "3. Feel free to personalize any other parts of the message";
+  };
+
   const handleConnect = () => {
     if (!purpose) return;
 
     const messageToSend = isEditing ? customMessage : 
       generateMessage(purposeOptions.find(opt => opt.value === purpose)?.message || '');
+
+    if (messageToSend.includes("[Your Name]") || messageToSend.includes("[Day 1]") || messageToSend.includes("[Day 2]")) {
+      toast.error("Please customize the placeholders in your message", {
+        description: "Replace [Your Name] and any [Day] placeholders before sending",
+        duration: 4000,
+      });
+      return;
+    }
 
     toast.success('Connection request sent!', {
       description: `Message: ${messageToSend}`,
@@ -122,19 +137,30 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => {
+                    setIsEditing(!isEditing);
+                    if (!isEditing && !customMessage) {
+                      const template = purposeOptions.find(opt => opt.value === purpose)?.message || '';
+                      setCustomMessage(generateMessage(template));
+                    }
+                  }}
                 >
                   {isEditing ? "Use Template" : "Customize Message"}
                 </Button>
               </div>
               
               {isEditing ? (
-                <Textarea
-                  value={customMessage}
-                  onChange={(e) => setCustomMessage(e.target.value)}
-                  className="min-h-[100px]"
-                  placeholder="Write your personalized message..."
-                />
+                <div className="space-y-2">
+                  <Textarea
+                    value={customMessage}
+                    onChange={(e) => setCustomMessage(e.target.value)}
+                    className="min-h-[100px]"
+                    placeholder={getPlaceholderText()}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {getPlaceholderText()}
+                  </p>
+                </div>
               ) : (
                 <div className="p-4 bg-gray-50 rounded-md">
                   <p className="text-sm">
