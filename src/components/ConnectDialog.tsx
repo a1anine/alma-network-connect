@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   AlertDialog,
@@ -20,26 +19,28 @@ type NetworkingPurpose =
   | "industry_advice"
   | "job_referral";
 
+const currentYear = new Date().getFullYear().toString().slice(-2); // Get last 2 digits of current year
+
 const purposeOptions: { value: NetworkingPurpose; label: string; message: string }[] = [
   {
     value: "coffee_chat",
     label: "Coffee Chat",
-    message: "I would love to schedule a coffee chat to learn more about your experience in {field} at {company}. Your background in {expertise} particularly interests me.",
+    message: "Hi {firstName}! I'm [Your Name], a fellow {university} alum '{graduationYear}. I've been following your work on {expertise} at {company} and would love to buy you a quick virtual (or in-person) coffee next week. Would you have 15 minutes on Tuesday or Thursday?",
   },
   {
     value: "expand_network",
     label: "Expand Network",
-    message: "I'm looking to expand my professional network in {field} and would be grateful for the connection. Your achievements in {achievements} are truly inspiring.",
+    message: "Hi {firstName}, I'm [Your Name], Class of '{graduationYear} at {university}. We both share interests in {expertise}, and I'd love to connect here on LinkedIn and learn about your post-grad path.",
   },
   {
     value: "industry_advice",
     label: "Industry Advice",
-    message: "I would appreciate your insights and advice about the {field} industry based on your experience, particularly regarding {expertise}.",
+    message: "Hello {firstName}! I'm [Your Name] (Class of '{graduationYear}, {university}) exploring a move into {field}. Your experience with {expertise} really stands out—any chance I could ask you 2 quick questions about how you got started?",
   },
   {
     value: "job_referral",
     label: "Job Referral",
-    message: "I'm interested in opportunities at {company} and would appreciate learning about potential openings. Your background in {expertise} aligns well with my career goals.",
+    message: "Hi {firstName}! I'm [Your Name], a fellow {university} grad '{graduationYear} interested in {role} at {company}. Since you're on that team, would you mind sharing any tips or referring me if you're comfortable? I really appreciate it!",
   },
 ];
 
@@ -54,11 +55,18 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const generateMessage = (template: string) => {
+    const firstName = leader.name.split(' ')[0];
+    const university = leader.alumniStatus.split(' ')[0];
+    const graduationYear = leader.alumniStatus.match(/'\d{2}/)?.[0].slice(1) || currentYear;
+
     return template
-      .replace('{field}', leader.field)
+      .replace('{firstName}', firstName)
+      .replace('{university}', university)
+      .replace('{graduationYear}', graduationYear)
       .replace('{company}', leader.company)
-      .replace('{expertise}', leader.expertise?.join(', ') || leader.field)
-      .replace('{achievements}', leader.achievements?.join(', ') || `${leader.field} at ${leader.company}`);
+      .replace('{field}', leader.field)
+      .replace('{role}', leader.role)
+      .replace('{expertise}', leader.expertise?.join(', ') || leader.field);
   };
 
   const handleConnect = () => {
