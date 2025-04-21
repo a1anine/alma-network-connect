@@ -69,6 +69,7 @@ const ConnectDialog = ({ leader, onClose }: ConnectDialogProps) => {
 
     toast.success('Connection request sent!', {
       description: `Message: ${messageToSend}`,
+      duration: 4000,
     });
     onClose();
   };
