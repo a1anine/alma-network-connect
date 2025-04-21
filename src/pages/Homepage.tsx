@@ -8,13 +8,15 @@ import LinkedInButton from "@/components/LinkedInButton";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ConnectDialog from "@/components/ConnectDialog";
 
 const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [universityFilter, setUniversityFilter] = useState("Stanford University");
   const [fieldFilter, setFieldFilter] = useState("");
+  const [selectedLeader, setSelectedLeader] = useState<Leader | null>(null);
 
-  // Sample data for the demo
+  // Sample data with more diverse fields
   const leaders = [
     {
       id: 1,
@@ -30,17 +32,17 @@ const Homepage = () => {
       name: "Michael Torres",
       role: "CTO",
       company: "TechVision Inc.",
-      field: "Artificial Intelligence",
+      field: "Business",
       alumniStatus: "Stanford '05",
       imageUrl: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
     },
     {
       id: 3,
-      name: "Jennifer Patel",
+      name: "Dr. Jennifer Patel",
       role: "Research Scientist",
       company: "GlobalHealth",
-      field: "Biomedical Engineering",
-      alumniStatus: "Stanford '10",
+      field: "Biology",
+      alumniStatus: "Emory '10",
       imageUrl: "https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
     },
     {
@@ -48,21 +50,41 @@ const Homepage = () => {
       name: "Robert Washington",
       role: "Principal Researcher",
       company: "OpenAI",
-      field: "Machine Learning",
+      field: "Computer Science",
       alumniStatus: "Stanford '12",
       imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
     },
+    {
+      id: 5,
+      name: "Emma Rodriguez",
+      role: "Professor of Literature",
+      company: "Emory University",
+      field: "Humanities",
+      alumniStatus: "Emory '08",
+      imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+    },
+    {
+      id: 6,
+      name: "Dr. James Kim",
+      role: "Biotech Researcher",
+      company: "BioPharma Solutions",
+      field: "Biology",
+      alumniStatus: "Stanford '15",
+      imageUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+    }
   ];
   
-  // For demo purposes, show connection simulation
-  const handleConnect = (id: number) => {
-    toast.success(`Connection request sent to leader #${id}!`);
+  // For demo purposes, show connection dialog
+  const handleConnect = (leader: Leader) => {
+    setSelectedLeader(leader);
   };
   
-  // Filter leaders based on field input
-  const filteredLeaders = fieldFilter 
-    ? leaders.filter(leader => leader.field.toLowerCase().includes(fieldFilter.toLowerCase()))
-    : leaders;
+  // Filter leaders based on field input and university
+  const filteredLeaders = leaders.filter(leader => {
+    const fieldMatch = !fieldFilter || leader.field.toLowerCase().includes(fieldFilter.toLowerCase());
+    const universityMatch = leader.alumniStatus.includes(universityFilter.split(' ')[0]);
+    return fieldMatch && universityMatch;
+  });
 
   // Demo what happens after LinkedIn login
   const handleDemoLogin = () => {
@@ -115,7 +137,7 @@ const Homepage = () => {
           <section className="py-16 bg-gray-50">
             <div className="container mx-auto px-4">
               <div className="mb-12 text-center">
-                <h2 className="text-3xl font-bold mb-4">Your Stanford Alumni Network</h2>
+                <h2 className="text-3xl font-bold mb-4">Your Alumni Network</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
                   Connect with these industry and academia leaders who share your alma mater. 
                   Send connection requests to start meaningful conversations.
@@ -126,7 +148,7 @@ const Homepage = () => {
                 <div className="flex gap-4">
                   <div className="flex-grow">
                     <Input 
-                      placeholder="Filter by field (e.g., Computer Science, AI...)" 
+                      placeholder="Filter by field (e.g., Computer Science, Business, Biology...)" 
                       value={fieldFilter}
                       onChange={(e) => setFieldFilter(e.target.value)}
                       className="w-full"
@@ -140,8 +162,7 @@ const Homepage = () => {
                         onChange={(e) => setUniversityFilter(e.target.value)}
                       >
                         <option value="Stanford University">Stanford University</option>
-                        <option value="MIT">MIT</option>
-                        <option value="Harvard">Harvard</option>
+                        <option value="Emory University">Emory University</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -187,7 +208,7 @@ const Homepage = () => {
                       <Button 
                         variant="outline" 
                         className="w-full"
-                        onClick={() => handleConnect(leader.id)}
+                        onClick={() => handleConnect(leader)}
                       >
                         Connect
                       </Button>
@@ -307,6 +328,14 @@ const Homepage = () => {
       </main>
 
       <Footer />
+      
+      {/* Connection Dialog */}
+      {selectedLeader && (
+        <ConnectDialog
+          leader={selectedLeader}
+          onClose={() => setSelectedLeader(null)}
+        />
+      )}
     </div>
   );
 };
