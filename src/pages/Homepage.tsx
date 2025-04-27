@@ -166,7 +166,7 @@ const Homepage = () => {
     },
     {
       id: 13,
-4 name: "Dr. Jessica Martinez",
+      name: "Dr. Jessica Martinez",
       role: "Environmental Scientist",
       company: "EPA",
       field: "Environmental Science",
