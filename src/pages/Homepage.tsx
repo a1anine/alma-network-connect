@@ -146,7 +146,7 @@ const Homepage = () => {
       role: "Neuroscience Director",
       company: "Brain Research Institute",
       field: "Neuroscience",
-      alumniStatus: "UNC '07",
+      alumniStatus: "UNC Chapel Hill '07",
       imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
       expertise: ["Brain Imaging", "Cognitive Science", "Neural Networks"],
       achievements: ["NIH Research Excellence Award", "Breakthrough in Alzheimer's research"],
@@ -158,7 +158,7 @@ const Homepage = () => {
       role: "Tech Entrepreneur",
       company: "Cybersecurity Innovations",
       field: "Technology",
-      alumniStatus: "UNC '14",
+      alumniStatus: "UNC Chapel Hill '14",
       imageUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
       expertise: ["Cybersecurity", "Blockchain", "Enterprise Software"],
       achievements: ["Founded successful startup", "Cybersecurity Patent Holder"],
@@ -170,7 +170,7 @@ const Homepage = () => {
       role: "Environmental Scientist",
       company: "EPA",
       field: "Environmental Science",
-      alumniStatus: "UNC '10",
+      alumniStatus: "UNC Chapel Hill '10",
       imageUrl: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604",
       expertise: ["Climate Research", "Environmental Policy", "Sustainability"],
       achievements: ["Presidential Early Career Award", "Environmental Leadership Prize"],
@@ -182,7 +182,7 @@ const Homepage = () => {
       role: "Sports Medicine Director",
       company: "Carolina Panthers",
       field: "Sports Medicine",
-      alumniStatus: "UNC '08",
+      alumniStatus: "UNC Chapel Hill '08",
       imageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d",
       expertise: ["Athletic Performance", "Injury Prevention", "Rehabilitation"],
       achievements: ["NFL Medical Excellence Award", "Sports Medicine Innovation"],
@@ -194,7 +194,7 @@ const Homepage = () => {
       role: "Creative Director",
       company: "Netflix",
       field: "Entertainment",
-      alumniStatus: "UNC '12",
+      alumniStatus: "UNC Chapel Hill '12",
       imageUrl: "https://images.unsplash.com/photo-1587620962725-abab7fe55159",
       expertise: ["Content Strategy", "Digital Media", "Entertainment Production"],
       achievements: ["Emmy Award Winner", "Innovative Content Creator"],
@@ -291,7 +291,7 @@ const Homepage = () => {
                       >
                         <option value="Stanford University">Stanford University</option>
                         <option value="Emory University">Emory University</option>
-                        <option value="UNC">UNC</option>
+                        <option value="UNC Chapel Hill">UNC Chapel Hill</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
